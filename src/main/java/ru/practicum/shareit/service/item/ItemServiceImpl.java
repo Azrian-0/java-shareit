@@ -1,17 +1,18 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.service.item;
 
-import ru.practicum.shareit.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.dto.item.ItemDto;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.model.Item;
+import ru.practicum.shareit.storage.item.ItemStorage;
 
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class ItemService implements ItemInterface {
+public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage inMemoryItemStorage;
 

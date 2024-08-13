@@ -1,10 +1,11 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.service.user;
 
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.dto.user.UserDto;
+import ru.practicum.shareit.model.User;
 
 import java.util.List;
 
-public interface UserInterface {
+public interface UserService {
 
     User create(UserDto userDto);
 

@@ -1,11 +1,13 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.dto.item;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
-@Builder
+@SuperBuilder
+@NoArgsConstructor
 public class ItemDto {
 
     private String name;

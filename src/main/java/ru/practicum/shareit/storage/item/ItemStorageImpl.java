@@ -1,19 +1,19 @@
-package ru.practicum.shareit.item;
+package ru.practicum.shareit.storage.item;
 
-import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.mapper.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserStorage;
+import ru.practicum.shareit.dto.item.ItemDto;
+import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.mapper.ItemMapper;
+import ru.practicum.shareit.model.Item;
+import ru.practicum.shareit.storage.user.UserStorage;
 
 import java.util.*;
 
 @Component
 @RequiredArgsConstructor
-public class InMemoryItemStorage implements ItemStorage {
+public class ItemStorageImpl implements ItemStorage {
 
     private final UserStorage inMemoryUserStorage;
     private final Map<Long, Map<Long, Item>> items = new HashMap<>();
@@ -30,7 +30,7 @@ public class InMemoryItemStorage implements ItemStorage {
         if (!inMemoryUserStorage.isUserContains(userId)) {
             throw new NotFoundException("Пользователя не существует");
         }
-        Item newItem = ItemMapper.mapToItem(itemDto);
+        Item newItem = ItemMapper.map(itemDto);
         newItem.setId(getNextId());
         newItem.setOwnerId(userId);
         Map<Long, Item> itemList = items.getOrDefault(userId, new HashMap<>());

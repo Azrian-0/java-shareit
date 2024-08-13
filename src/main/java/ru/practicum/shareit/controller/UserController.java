@@ -1,12 +1,16 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.dto.user.UserDto;
+import ru.practicum.shareit.dto.user.UserResponseDto;
+import ru.practicum.shareit.mapper.UserMapper;
+import ru.practicum.shareit.service.user.UserService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -14,30 +18,30 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserInterface userService;
+    private final UserService userService;
 
     @PostMapping
-    public User create(@Valid @RequestBody UserDto userDto) {
+    public UserResponseDto create(@Valid @RequestBody UserDto userDto) {
         log.info("Обработан POST user запрос. email - {}", userDto.getEmail());
-        return userService.create(userDto);
+        return UserMapper.map(userService.create(userDto));
     }
 
     @PatchMapping("/{userId}")
-    public User update(@Valid @RequestBody UserDto userDto, @PathVariable Long userId) {
+    public UserResponseDto update(@Valid @RequestBody UserDto userDto, @PathVariable Long userId) {
         log.info("Обработан PATCH /users/{} запрос.", userId);
-        return userService.update(userDto, userId);
+        return UserMapper.map(userService.update(userDto, userId));
     }
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserResponseDto> findAll() {
         log.info("Обработан GET users запрос.");
-        return userService.findAll();
+        return userService.findAll().stream().map(UserMapper::map).collect(Collectors.toList());
     }
 
     @GetMapping("/{userId}")
-    public User findById(@PathVariable Long userId) {
+    public UserResponseDto findById(@PathVariable Long userId) {
         log.info("Обработан GET /users/{} запрос.", userId);
-        return userService.findById(userId);
+        return UserMapper.map(userService.findById(userId));
     }
 
     @DeleteMapping("/{userId}")

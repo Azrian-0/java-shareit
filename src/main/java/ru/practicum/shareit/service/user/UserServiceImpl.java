@@ -1,14 +1,16 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.service.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.dto.user.UserDto;
+import ru.practicum.shareit.model.User;
+import ru.practicum.shareit.storage.user.UserStorage;
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserInterface {
+public class UserServiceImpl implements UserService {
 
     private final UserStorage inMemoryUserStorage;
 
