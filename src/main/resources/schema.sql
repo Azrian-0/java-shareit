@@ -1,13 +1,13 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(30) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE
     );
 
 
 CREATE TABLE IF NOT EXISTS items (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    name VARCHAR(30) NOT NULL,
     description VARCHAR(255) NOT NULL,
     available BOOLEAN NOT NULL,
     owner_id BIGINT,
@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS bookings (
     booker_id BIGINT NOT NULL,
     start_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     end_time TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-    status VARCHAR(255) NOT NULL,
+    status VARCHAR(30) NOT NULL,
     FOREIGN KEY (item_id) REFERENCES items(id),
     FOREIGN KEY (booker_id) REFERENCES users(id)
     );

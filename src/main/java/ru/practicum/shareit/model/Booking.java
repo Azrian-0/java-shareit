@@ -1,16 +1,17 @@
 package ru.practicum.shareit.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import ru.practicum.shareit.enums.BookingStatus;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "bookings")
-@Data
 @NoArgsConstructor
+@Getter@Setter
 public class Booking {
 
     @Id
