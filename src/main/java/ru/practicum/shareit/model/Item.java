@@ -12,7 +12,8 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter@Setter
+@Getter
+@Setter
 public class Item {
 
     @Id
