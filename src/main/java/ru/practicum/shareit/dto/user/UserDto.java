@@ -1,6 +1,5 @@
 package ru.practicum.shareit.dto.user;
 
-import jakarta.validation.constraints.Email;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -10,7 +9,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 public class UserDto {
 
+    private Long id;
+
     private String name;
-    @Email
+
     private String email;
 }
