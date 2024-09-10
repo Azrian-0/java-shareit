@@ -54,7 +54,7 @@ public class UserControllerTest {
     protected void deleteUserById_whenInvoked_thenReturnMessage() {
         String expectedMessage = "{\"message\":\"Пользователь с id - 1, удалил свой аккаунт\"}";
         Mockito.when(userService.deleteById(1L))
-                .thenReturn("Пользователь с id - " +  1L+ ", удалил свой аккаунт");
+                .thenReturn("Пользователь с id - " + 1L + ", удалил свой аккаунт");
 
         String message = userController.deleteById(1L);
 
