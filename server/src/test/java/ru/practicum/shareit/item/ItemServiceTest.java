@@ -41,7 +41,7 @@ public class ItemServiceTest {
     private BookingRepository bookingRepository;
 
     @InjectMocks
-    private ItemService itemService;
+    private ItemServiceImpl itemService;
 
     @Captor
     private ArgumentCaptor<Item> itemArgumentCaptor;
