@@ -16,6 +16,7 @@ import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserServiceImpl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +36,7 @@ public class BookingServiceTest {
     private UserRepository userRepository;
 
     @InjectMocks
-    private BookingServiceImpl bookingServiceImpl;
+    private BookingServiceImpl bookingService;
 
     @Captor
     private ArgumentCaptor<Booking> bookingArgumentCaptor;
@@ -58,7 +59,7 @@ public class BookingServiceTest {
         Mockito.when(itemService.getById(bookingRequestDto.getItemId())).thenReturn(item);
         Mockito.when(userService.findById(userId)).thenReturn(user);
 
-        Booking request = bookingServiceImpl.create(bookingRequestDto, userId);
+        Booking request = bookingService.create(bookingRequestDto, userId);
 
         Assertions.assertEquals(bookingRequestDto.getItemId(), request.getItem().getId());
     }
@@ -80,7 +81,7 @@ public class BookingServiceTest {
 
         Mockito.when(itemService.getById(itemId)).thenReturn(item);
 
-        Assertions.assertThrows(ValidationException.class, () -> bookingServiceImpl.create(bookingRequestDto, userId));
+        Assertions.assertThrows(ValidationException.class, () -> bookingService.create(bookingRequestDto, userId));
     }
 
     @Test
@@ -97,7 +98,7 @@ public class BookingServiceTest {
         Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         Mockito.when(bookingRepository.existsById(bookingId)).thenReturn(true);
 
-        bookingServiceImpl.setApproved(Optional.of(true), bookingId, userId);
+        bookingService.setApproved(Optional.of(true), bookingId, userId);
 
         Mockito.verify(bookingRepository).save(bookingArgumentCaptor.capture());
         Booking bookingSave = bookingArgumentCaptor.getValue();
@@ -112,7 +113,7 @@ public class BookingServiceTest {
 
         Mockito.when(bookingRepository.existsById(bookingId)).thenReturn(false);
 
-        Assertions.assertThrows(ConflictException.class, () -> bookingServiceImpl.setApproved(Optional.of(true), bookingId, userId));
+        Assertions.assertThrows(ConflictException.class, () -> bookingService.setApproved(Optional.of(true), bookingId, userId));
     }
 
     @Test
@@ -127,7 +128,7 @@ public class BookingServiceTest {
         Mockito.when(bookingRepository.findById(bookingId)).thenReturn(Optional.of(booking));
         Mockito.when(bookingRepository.existsById(bookingId)).thenReturn(true);
 
-        Booking request = bookingServiceImpl.getById(bookingId, userId);
+        Booking request = bookingService.getById(bookingId, userId);
 
         Assertions.assertNotNull(request);
         Assertions.assertEquals(bookingId, request.getId());
@@ -144,7 +145,7 @@ public class BookingServiceTest {
 
         Mockito.when(bookingRepository.existsById(bookingId)).thenReturn(false);
 
-        Assertions.assertThrows(ConflictException.class, () -> bookingServiceImpl.getById(bookingId, userId));
+        Assertions.assertThrows(ConflictException.class, () -> bookingService.getById(bookingId, userId));
     }
 
     @Test
@@ -157,17 +158,196 @@ public class BookingServiceTest {
         Mockito.when(userRepository.existsById(userId)).thenReturn(true);
         Mockito.when(bookingRepository.findByBookerId(userId)).thenReturn(bookings);
 
-        List<Booking> result = bookingServiceImpl.getBookingsByRequester(userId, Optional.of("all"));
+        List<Booking> result = bookingService.getBookingsByRequester(userId, Optional.of("all"));
 
         Assertions.assertEquals(bookings, result);
     }
 
     @Test
-    protected void getBookingsByOwner_whenInvalidStatus_thenReturnNotFoundException() {
-        long userId = 1L;
+    void getBookingsByRequester_All() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findByBookerId(1L)).thenReturn(bookings);
 
-        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("all"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
 
-        Assertions.assertThrows(NotFoundException.class, () -> bookingServiceImpl.getBookingsByOwner(userId, Optional.of("invalidStatus")));
+    @Test
+    void getBookingsByRequester_Current() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findCurrentBookings(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("current"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByRequester_Past() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findPastBookings(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("past"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByRequester_Future() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findFutureBookings(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("future"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByRequester_Waiting() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findBookingsByStatusByUserId(1L, "WAITING")).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("waiting"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByRequester_Rejected() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findBookingsByStatusByUserId(1L, "REJECTED")).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("rejected"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByRequester_UserNotFound() {
+        Mockito.when(userRepository.existsById(1L)).thenReturn(false);
+
+        Assertions.assertThrows(NotFoundException.class, () -> bookingService.getBookingsByRequester(1L, Optional.of("all")));
+    }
+
+    @Test
+    void getBookingsByRequester_InvalidStatus() {
+        User user = new User();
+        user.setId(1L);
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+
+        Assertions.assertThrows(NotFoundException.class, () -> bookingService.getBookingsByRequester(1L, Optional.of("invalid_status")));
+    }
+
+    @Test
+    void getBookingsByOwner_All() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findByOwnerId(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("all"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByOwner_Current() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findOwnerCurrentBookings(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("current"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByOwner_Past() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findOwnerPastBookings(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("past"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByOwner_Future() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findOwnerFutureBookings(1L)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("future"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByOwner_Waiting() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findOwnerBookingsByStatusByUserId(1L, "WAITING")).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("waiting"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByOwner_Rejected() {
+        User user = new User();
+        user.setId(1L);
+        List<Booking> bookings = new ArrayList<>();
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+        Mockito.when(bookingRepository.findOwnerBookingsByStatusByUserId(1L, "REJECTED")).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("rejected"));
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(bookings, result);
+    }
+
+    @Test
+    void getBookingsByOwnerUser_NotFound() {
+        Mockito.when(userRepository.existsById(1L)).thenReturn(false);
+
+        Assertions.assertThrows(NotFoundException.class, () -> bookingService.getBookingsByOwner(1L, Optional.of("all")));
+    }
+
+    @Test
+    void getBookingsByOwner_InvalidStatus() {
+        User user = new User();
+        user.setId(1L);
+        Mockito.when(userRepository.existsById(1L)).thenReturn(true);
+
+        Assertions.assertThrows(NotFoundException.class, () -> bookingService.getBookingsByOwner(1L, Optional.of("invalid_status")));
     }
 }

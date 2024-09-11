@@ -13,6 +13,7 @@ import ru.practicum.shareit.item.comment.Comment;
 import ru.practicum.shareit.item.comment.CommentRepository;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -30,6 +31,9 @@ public class ItemServiceTest {
 
     @Mock
     private ItemRepository itemRepository;
+
+    @Mock
+    private ItemRequestRepository requestRepository;
 
     @Mock
     private UserRepository userRepository;
@@ -91,6 +95,36 @@ public class ItemServiceTest {
         Mockito.verify(userRepository).existsById(userId);
         Mockito.verify(userRepository, Mockito.never()).findById(userId);
         Mockito.verify(itemRepository, Mockito.never()).save(any(Item.class));
+    }
+
+    @Test
+    protected void create_whenItemRequestIdFound_thenSetRequest() {
+        Long userId = 1L;
+        Long requestId = 2L;
+        ItemRequestDto itemRequestDto = new ItemRequestDto();
+        itemRequestDto.setName("name");
+        itemRequestDto.setRequestId(requestId);
+
+        User user = new User();
+        ru.practicum.shareit.request.ItemRequest itemRequest = new ru.practicum.shareit.request.ItemRequest();
+
+        Item expectedItem = new Item();
+        expectedItem.setName("name");
+        expectedItem.setOwner(user);
+        expectedItem.setRequest(itemRequest);
+
+        Mockito.when(userRepository.existsById(userId)).thenReturn(true);
+        Mockito.when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        Mockito.when(requestRepository.findById(requestId)).thenReturn(Optional.of(itemRequest));
+        Mockito.when(itemRepository.save(any(Item.class))).thenReturn(expectedItem);
+
+        Item request = itemService.create(userId, itemRequestDto);
+
+        Assertions.assertEquals(expectedItem, request);
+        Mockito.verify(userRepository).existsById(userId);
+        Mockito.verify(userRepository).findById(userId);
+        Mockito.verify(requestRepository).findById(requestId);
+        Mockito.verify(itemRepository).save(any(Item.class));
     }
 
     @Test
