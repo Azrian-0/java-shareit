@@ -1,16 +1,19 @@
 package ru.practicum.shareit.item;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
-import java.util.Optional;
+import java.util.Collections;
 
 @Controller
 @RequestMapping(path = "/items")
@@ -21,27 +24,19 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
+    @Validated(Create.class)
     public ResponseEntity<Object> create(@RequestHeader("${shareIt.headers.userHeader}") Long userId,
-                                         @RequestBody ItemRequestDto itemRequestDto) {
+                                         @Valid @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Обработан POST item запрос. Пользователем с ID {}", userId);
-        if (itemRequestDto.getAvailable() == null || (itemRequestDto.getName() == null ||
-                itemRequestDto.getName().isBlank()) || (itemRequestDto.getDescription() == null ||
-                itemRequestDto.getDescription().isBlank())) {
-            throw new ValidationException("Нельзя создать объект без указания полей - available, name, description");
-        }
         return itemClient.create(userId, itemRequestDto);
     }
 
     @PatchMapping("/{itemId}")
+    @Validated(Update.class)
     public ResponseEntity<Object> update(@RequestHeader("${shareIt.headers.userHeader}") Long userId,
-                                         @PathVariable Long itemId, @RequestBody ItemRequestDto itemRequestDto) {
+                                         @PathVariable Long itemId,
+                                         @Valid @RequestBody ItemRequestDto itemRequestDto) {
         log.info("Обработан PATCH item запрос. /items/{}", userId);
-        if (itemRequestDto.getDescription() != null && itemRequestDto.getDescription().isBlank()) {
-            throw new ValidationException("Описание не может быть пустым");
-        }
-        if (itemRequestDto.getName() != null && itemRequestDto.getName().isBlank()) {
-            throw new ValidationException("Имя не может быть пустым");
-        }
         return itemClient.update(userId, itemId, itemRequestDto);
     }
 
@@ -58,16 +53,20 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> searchItems(@RequestParam Optional<String> text,
+    public ResponseEntity<Object> searchItems(@RequestParam String text,
                                               @RequestHeader("${shareIt.headers.userHeader}") Long userId) {
         log.info("Обработан GET items запрос. /items/search с текстом - {}", text);
+        if (ObjectUtils.isEmpty(text)) {
+            return ResponseEntity.ok(Collections.emptyList());
+        }
         return itemClient.searchItems(text, userId);
     }
 
     @PostMapping("/{itemId}/comment")
+    @Validated(Create.class)
     public ResponseEntity<Object> createComments(@PathVariable Long itemId,
                                                  @RequestHeader("${shareIt.headers.userHeader}") Long userId,
-                                                 @RequestBody CommentRequestDto commentRequestDto) {
+                                                 @Valid @RequestBody CommentRequestDto commentRequestDto) {
         log.info("Обработан POST /itemId/comment запрос.");
         ResponseEntity<Object> objectResponseEntity = itemClient.createComments(itemId, userId, commentRequestDto);
         log.info(objectResponseEntity.toString());

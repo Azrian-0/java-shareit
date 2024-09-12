@@ -12,7 +12,6 @@ import ru.practicum.shareit.item.dto.CommentRequestDto;
 import ru.practicum.shareit.item.dto.ItemRequestDto;
 
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 public class ItemClient extends BaseClient {
@@ -44,9 +43,9 @@ public class ItemClient extends BaseClient {
         return get("", userId);
     }
 
-    public ResponseEntity<Object> searchItems(Optional<String> text, Long userId) {
+    public ResponseEntity<Object> searchItems(String text, Long userId) {
         Map<String, Object> parameters = Map.of(
-                "text", text.orElse("")
+                "text", text
         );
         return get("/search?text={text}", userId, parameters);
     }

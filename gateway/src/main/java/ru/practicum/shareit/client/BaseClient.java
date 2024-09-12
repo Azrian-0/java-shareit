@@ -1,5 +1,6 @@
 package ru.practicum.shareit.client;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.lang.Nullable;
 import org.springframework.web.client.HttpStatusCodeException;
@@ -9,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 
 public class BaseClient {
+
+    @Value("${shareIt.headers.userHeader}")
+    private String userHeader;
 
     protected final RestTemplate rest;
 
@@ -97,7 +101,7 @@ public class BaseClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));
         if (userId != null) {
-            headers.set("X-Sharer-User-Id", String.valueOf(userId));
+            headers.set(userHeader, String.valueOf(userId));
         }
         return headers;
     }

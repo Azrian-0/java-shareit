@@ -7,9 +7,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.ConflictException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.user.dto.UserRequestDto;
+import ru.practicum.shareit.validation.Create;
+import ru.practicum.shareit.validation.Update;
 
 @Controller
 @RequestMapping(path = "/users")
@@ -21,25 +21,15 @@ public class UserController {
     private final UserClient userClient;
 
     @PostMapping
+    @Validated(Create.class)
     public ResponseEntity<Object> create(@Valid @RequestBody UserRequestDto userRequestDto) {
-        if (userRequestDto.getEmail() == null || !(userRequestDto.getEmail().contains("@"))) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
-        }
-        if (userRequestDto.getName() == null) {
-            throw new ConflictException("Имя не может быть пустым.");
-        }
         log.info("Обработан POST user запрос.");
         return userClient.create(userRequestDto);
     }
 
     @PatchMapping("/{userId}")
+    @Validated(Update.class)
     public ResponseEntity<Object> update(@Valid @RequestBody UserRequestDto userRequestDto, @PathVariable Long userId) {
-        if (userRequestDto.getEmail() != null && (userRequestDto.getEmail().isBlank() || !(userRequestDto.getEmail().contains("@")))) {
-            throw new ValidationException("Электронная почта не может быть пустой и должна содержать символ @");
-        }
-        if (userRequestDto.getName() != null && userRequestDto.getName().isBlank()) {
-            throw new ValidationException("Имя не может быть пустым.");
-        }
         log.info("Обработан PATCH /users/{} запрос.", userId);
         return userClient.update(userRequestDto, userId);
     }
