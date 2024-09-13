@@ -14,17 +14,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query(value = "SELECT * FROM bookings WHERE booker_id = :bookerId AND item_id = :itemId AND end_time < :timestamp", nativeQuery = true)
     Booking findPastBooking(@Param("bookerId") Long userId, @Param("itemId") Long itemId, @Param("timestamp") Timestamp timestamp);
 
-    @Query("SELECT b FROM Booking AS b WHERE b.start < CURRENT_TIMESTAMP AND b.end > CURRENT_TIMESTAMP AND b.booker = ?1")
+    @Query("SELECT b FROM Booking AS b WHERE b.start < CURRENT_TIMESTAMP AND b.end > CURRENT_TIMESTAMP AND b.booker.id = ?1")
     List<Booking> findCurrentBookings(Long userId);
 
-    @Query("SELECT b FROM Booking AS b WHERE b.end < CURRENT_TIMESTAMP AND b.booker = ?1")
+    @Query("SELECT b FROM Booking AS b WHERE b.end < CURRENT_TIMESTAMP AND b.booker.id = ?1")
     List<Booking> findPastBookings(Long userId);
 
-    @Query("SELECT b FROM Booking AS b WHERE b.start > CURRENT_TIMESTAMP AND b.booker = ?1")
+    @Query("SELECT b FROM Booking AS b WHERE b.start > CURRENT_TIMESTAMP AND b.booker.id = ?1")
     List<Booking> findFutureBookings(Long userId);
 
-    @Query("SELECT b FROM Booking AS b WHERE b.booker = ?1 AND b.status = ?2")
-    List<Booking> findBookingsByStatusByUserId(Long userId, String status);
+    @Query("SELECT b FROM Booking AS b WHERE b.booker.id = ?1 AND b.status = ?2")
+    List<Booking> findBookingsByStatusByUserId(Long userId, BookingStatus status);
 
     @Query("SELECT b FROM Booking AS b WHERE b.item.owner.id = ?1")
     List<Booking> findByOwnerId(Long ownerId);
@@ -39,5 +39,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     List<Booking> findOwnerFutureBookings(Long userId);
 
     @Query("SELECT b FROM Booking AS b WHERE b.item.owner.id = ?1 AND b.status = ?2")
-    List<Booking> findOwnerBookingsByStatusByUserId(Long userId, String status);
+    List<Booking> findOwnerBookingsByStatusByUserId(Long userId, BookingStatus status);
 }

@@ -14,11 +14,11 @@ public class ItemRequestDto {
     @Size(groups = {Create.class, Update.class}, max = 30)
     private String name;
 
-    @NotBlank
-    @Size(max = 255)
+    @NotBlank(groups = {Create.class})
+    @Size(groups = {Create.class, Update.class}, max = 255)
     private String description;
 
-    @NotNull
+    @NotNull(groups = {Create.class})
     private Boolean available;
 
     private Long requestId;

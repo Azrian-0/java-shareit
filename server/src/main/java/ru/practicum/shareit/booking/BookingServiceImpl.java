@@ -106,7 +106,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findFutureBookings(userId);
             }
             case "waiting", "rejected" -> {
-                return bookingRepository.findBookingsByStatusByUserId(userId, statusLow.toUpperCase());
+                return bookingRepository.findBookingsByStatusByUserId(userId, BookingStatus.valueOf(statusLow.toUpperCase()));
             }
             default -> {
                 log.error("Статуса - " + status + ", не существует");
@@ -136,7 +136,7 @@ public class BookingServiceImpl implements BookingService {
                 return bookingRepository.findOwnerFutureBookings(userId);
             }
             case "waiting", "rejected" -> {
-                return bookingRepository.findOwnerBookingsByStatusByUserId(userId, statusLow.toUpperCase());
+                return bookingRepository.findOwnerBookingsByStatusByUserId(userId, BookingStatus.valueOf(statusLow.toUpperCase()));
             }
             default -> {
                 log.error("Статуса - " + status + ", не существует");

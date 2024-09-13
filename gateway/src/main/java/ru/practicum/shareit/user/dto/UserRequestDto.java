@@ -14,7 +14,7 @@ public class UserRequestDto {
     @Size(groups = {Create.class, Update.class}, max = 30)
     private String name;
 
-    @Email(groups = {Create.class})
+    @Email(groups = {Create.class, Update.class})
     @NotBlank(groups = {Create.class})
     @Size(groups = {Create.class, Update.class}, max = 30)
     private String email;

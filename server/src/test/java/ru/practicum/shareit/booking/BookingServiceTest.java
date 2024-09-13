@@ -221,7 +221,7 @@ public class BookingServiceTest {
         user.setId(1L);
         List<Booking> bookings = new ArrayList<>();
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
-        Mockito.when(bookingRepository.findBookingsByStatusByUserId(1L, "WAITING")).thenReturn(bookings);
+        Mockito.when(bookingRepository.findBookingsByStatusByUserId(1L, BookingStatus.WAITING)).thenReturn(bookings);
 
         List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("waiting"));
         Assertions.assertNotNull(result);
@@ -234,7 +234,7 @@ public class BookingServiceTest {
         user.setId(1L);
         List<Booking> bookings = new ArrayList<>();
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
-        Mockito.when(bookingRepository.findBookingsByStatusByUserId(1L, "REJECTED")).thenReturn(bookings);
+        Mockito.when(bookingRepository.findBookingsByStatusByUserId(1L, BookingStatus.REJECTED)).thenReturn(bookings);
 
         List<Booking> result = bookingService.getBookingsByRequester(1L, Optional.of("rejected"));
         Assertions.assertNotNull(result);
@@ -315,7 +315,7 @@ public class BookingServiceTest {
         user.setId(1L);
         List<Booking> bookings = new ArrayList<>();
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
-        Mockito.when(bookingRepository.findOwnerBookingsByStatusByUserId(1L, "WAITING")).thenReturn(bookings);
+        Mockito.when(bookingRepository.findOwnerBookingsByStatusByUserId(1L, BookingStatus.WAITING)).thenReturn(bookings);
 
         List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("waiting"));
         Assertions.assertNotNull(result);
@@ -328,7 +328,7 @@ public class BookingServiceTest {
         user.setId(1L);
         List<Booking> bookings = new ArrayList<>();
         Mockito.when(userRepository.existsById(1L)).thenReturn(true);
-        Mockito.when(bookingRepository.findOwnerBookingsByStatusByUserId(1L, "REJECTED")).thenReturn(bookings);
+        Mockito.when(bookingRepository.findOwnerBookingsByStatusByUserId(1L, BookingStatus.REJECTED)).thenReturn(bookings);
 
         List<Booking> result = bookingService.getBookingsByOwner(1L, Optional.of("rejected"));
         Assertions.assertNotNull(result);

@@ -1,8 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.NotNull;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -20,4 +19,16 @@ public class BookingRequestDto {
     @NotNull
     @Future
     private LocalDateTime end;
+
+    @JsonIgnore
+    @AssertFalse
+    public boolean isStartEqualsEnd() {
+        return start.equals(end);
+    }
+
+    @JsonIgnore
+    @AssertTrue
+    public boolean isStartBeforeEnd() {
+        return start.isBefore(end);
+    }
 }
