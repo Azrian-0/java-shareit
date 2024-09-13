@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.*;
 import lombok.Data;
+import ru.practicum.shareit.validation.SecondOrder;
 
 import java.time.LocalDateTime;
 
@@ -21,13 +22,13 @@ public class BookingRequestDto {
     private LocalDateTime end;
 
     @JsonIgnore
-    @AssertFalse
+    @AssertFalse(groups = {SecondOrder.class})
     public boolean isStartEqualsEnd() {
         return start.equals(end);
     }
 
     @JsonIgnore
-    @AssertTrue
+    @AssertTrue(groups = {SecondOrder.class})
     public boolean isStartBeforeEnd() {
         return start.isBefore(end);
     }
