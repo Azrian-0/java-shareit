@@ -78,6 +78,7 @@ public class BookingRepositoryTest {
         itemRepository.deleteAll();
         userRepository.deleteAll();
     }
+
     @Test
     public void testFindByBookerId() {
         List<Booking> bookings = bookingRepository.findByBookerId(booker.getId());
